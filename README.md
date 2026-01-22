@@ -1,13 +1,13 @@
-# Subscripfy 💰
+# Subscripify 💰
 
 **Stop unwanted charges. Track bills & subscriptions offline.**
 
-Subscripfy is a privacy-focused financial manager built with Flutter. Unlike other apps, it works 100% offline and never asks for your bank login credentials.
+Subscripify is a privacy-focused financial manager built with Flutter. Unlike other apps, it works 100% offline and never asks for your bank login credentials.
 
 <img src="assets/icon.png" width="100" height="100">
 
 ## 🚀 Download
-**[Download the latest APK here](https://github.com/ianisd/subscripfy/releases)**  
+**[Download the latest APK here](https://github.com/ianisd/Subscripify/releases)**  
 *(Click "Assets" in the latest release to find the .apk file)*
 
 ## ✨ Features
