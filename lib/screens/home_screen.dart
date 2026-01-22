@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (!isPremium) {
       _bannerAd = BannerAd(
-        adUnitId: 'ca-app-pub-3940256099942544/6300978111', // Test ID
+        adUnitId: 'ca-app-pub-4023310784068443/3017923187', // Test ID
         size: AdSize.banner,
         request: const AdRequest(),
         listener: BannerAdListener(
