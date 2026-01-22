@@ -41,16 +41,11 @@ class _AddSubscriptionScreenState extends State<AddSubscriptionScreen> {
 
       int notifId;
 
+      // 1. DATABASE LOGIC (Save Data)
       if (widget.subscription != null) {
-        // --- EDIT MODE ---
-        // 1. Get the existing stable ID
+        // Edit Mode
         notifId = widget.subscription!.notificationId;
 
-        // 2. CANCEL the existing notification for this ID
-        // (This ensures we don't have a "ghost" alert for the old date)
-        await NotificationService.cancelNotification(notifId);
-
-        // 3. Update Hive Data
         widget.subscription!.name = _nameController.text;
         widget.subscription!.amount = amount;
         widget.subscription!.nextBillDate = _selectedDate;
@@ -58,10 +53,8 @@ class _AddSubscriptionScreenState extends State<AddSubscriptionScreen> {
         widget.subscription!.category = _category;
 
         await widget.subscription!.save();
-
       } else {
-        // --- CREATE MODE ---
-        // 1. Create Object (Constructor generates the random ID)
+        // Create Mode
         final newSub = Subscription(
           name: _nameController.text,
           amount: amount,
@@ -69,23 +62,31 @@ class _AddSubscriptionScreenState extends State<AddSubscriptionScreen> {
           period: _period,
           category: _category,
         );
-
-        // 2. Save to Hive
         await box.add(newSub);
-
-        // 3. Grab the ID for scheduling
         notifId = newSub.notificationId;
       }
 
-      // --- SCHEDULE NEW ---
-      // Regardless of Edit or Create, we schedule the new date with the stable ID
-      await NotificationService.scheduleNotification(
-        notifId,
-        _nameController.text,
-        _selectedDate,
-      );
+      // 2. NOTIFICATION LOGIC (Wrapped in Try-Catch)
+      try {
+        // Attempt to cancel old ones first (safety)
+        await NotificationService.cancelNotification(notifId);
 
-      if (mounted) Navigator.of(context).pop();
+        // Schedule new one
+        await NotificationService.scheduleNotification(
+          notifId,
+          _nameController.text,
+          _selectedDate,
+        );
+      } catch (e) {
+        // If notifications fail (e.g. permission denied), just print error
+        // DO NOT CRASH THE APP
+        debugPrint("Notification Error: $e");
+      }
+
+      // 3. NAVIGATION (Always runs now)
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
