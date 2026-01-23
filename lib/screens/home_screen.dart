@@ -152,21 +152,33 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // --- FREEMIUM LOGIC: LIMIT TO 5 SUBS ---
-          bool isPremium = settingsBox.get('isPremium', defaultValue: false);
-          if (!isPremium && subBox.length >= 5) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Free limit reached! Upgrade to add more.")),
+        floatingActionButton: ValueListenableBuilder(
+          valueListenable: Hive.box('settings').listenable(),
+          builder: (context, Box settings, _) {
+            bool isPremium = settings.get('isPremium', defaultValue: false);
+
+            // If Ad is loaded AND user is not premium, push button up by 70px
+            double bottomPadding = (_isAdLoaded && !isPremium) ? 70.0 : 0.0;
+
+            return Padding(
+              padding: EdgeInsets.only(bottom: bottomPadding),
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  // --- FREEMIUM LOGIC ---
+                  if (!isPremium && subBox.length >= 5) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Free limit reached! Upgrade to add more.")),
+                    );
+                    return;
+                  }
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const AddSubscriptionScreen()));
+                },
+                label: const Text("Add New"),
+                icon: const Icon(Icons.add),
+              ),
             );
-            return; // Stop here
-          }
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddSubscriptionScreen()));
-        },
-        label: const Text("Add New"),
-        icon: const Icon(Icons.add),
-      ),
+          },
+        ),
     );
   }
 }
